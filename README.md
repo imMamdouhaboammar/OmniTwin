@@ -239,6 +239,50 @@ See [docs/licensing.md](docs/licensing.md) and [CITATION.cff](CITATION.cff) for 
 
 ---
 
+## Ecosystem & Reference Applications
+
+OmniTwin is designed as a reusable cognitive layer for applications that need persistent
+identity, evidence-aware memory, and behavioral continuity. It does not include a user-facing
+conversation interface by itself — that is the role of companion applications built on top of it.
+
+### Rafiq — Open-Source AI Companion
+
+[**Rafiq (رفيق)**](https://github.com/imMamdouhaboammar/Rafiq-Bot) is a related open-source AI
+companion application that provides conversational interfaces, configurable personas, memory,
+continuity, and model integrations. It is written in TypeScript/React with Bun, supports
+Gemini API / Vertex AI inference, and includes browser-local persistence, direct and group
+conversation flows, and WhatsApp-export persona analysis.
+
+Together, the projects illustrate how a user-facing companion platform and a specialized
+cognitive engine can address different layers of persistent conversational AI:
+
+```mermaid
+flowchart LR
+    U["User"] --> R["Rafiq Application (TypeScript / React)"]
+    R --> L["Rafiq LLM Runtime (Gemini / Vertex AI)"]
+    R -.->|"optional cognitive context"| O["OmniTwin (Cognitive Engine)"]
+    O --> E["Evidence and Recall"]
+    O --> P["Social Planning"]
+    O --> G["Grounding Verification"]
+    O -.->|"context and proposals"| R
+    L --> R
+```
+
+> **Dashed arrows** represent a proposed integration boundary.
+> A verified, production-ready code-level integration between OmniTwin and Rafiq does not exist today.
+> See [docs/integrations/rafiq.md](docs/integrations/rafiq.md) for the full design specification.
+
+**Why explore Rafiq?**
+- It demonstrates a real companion application architecture that OmniTwin's cognitive engine is designed to augment
+- Its inference, persona, and continuity layers identify exactly where cognitive primitives compose naturally
+- It is an open, MIT-licensed, independently maintained project that developers can study, fork, and extend
+
+**→ [Explore Rafiq — Open-Source AI Companion](https://github.com/imMamdouhaboammar/Rafiq-Bot)**
+
+**→ [Read the OmniTwin ↔ Rafiq Integration Design](docs/integrations/rafiq.md)**
+
+---
+
 ## Security & Privacy Policy
 
 - **Fail-Closed Security**: By default, the gRPC service binds strictly to `127.0.0.1`. Binding to public interfaces without TLS is blocked.
