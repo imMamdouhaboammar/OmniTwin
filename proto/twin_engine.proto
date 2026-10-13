@@ -1,0 +1,181 @@
+// Copyright 2026 Mamdouh Aboammar
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+
+package twin.engine.v1;
+
+enum ExtractKind {
+  EXTRACT_KIND_UNSPECIFIED = 0;
+  EXTRACT_KIND_BELIEF = 1;
+  EXTRACT_KIND_HEURISTIC = 2;
+  EXTRACT_KIND_FRAMEWORK = 3;
+  EXTRACT_KIND_STANCE = 4;
+  EXTRACT_KIND_ANTIPATTERN = 5;
+  EXTRACT_KIND_PROCEDURE = 6;
+  EXTRACT_KIND_REASONING = 7;
+  EXTRACT_KIND_ANECDOTE = 8;
+  EXTRACT_KIND_PREDICTION = 9;
+  EXTRACT_KIND_AXIOM = 10;
+  EXTRACT_KIND_RELATION = 11;
+  EXTRACT_KIND_PREFERENCE = 12;
+}
+
+enum ConfidenceTier {
+  CONFIDENCE_TIER_UNSPECIFIED = 0;
+  CONFIDENCE_TIER_A = 1;
+  CONFIDENCE_TIER_B = 2;
+  CONFIDENCE_TIER_C = 3;
+}
+
+enum SocialMove {
+  SOCIAL_MOVE_UNSPECIFIED = 0;
+  SOCIAL_MOVE_MINIMAL_PRESENCE = 1;
+  SOCIAL_MOVE_ANSWER = 2;
+  SOCIAL_MOVE_ACKNOWLEDGE = 3;
+  SOCIAL_MOVE_TEASE = 4;
+  SOCIAL_MOVE_CHECK_IN = 5;
+  SOCIAL_MOVE_REQUEST_CALL = 6;
+  SOCIAL_MOVE_SEEK_OPINION = 7;
+  SOCIAL_MOVE_GIVE_OPINION = 8;
+  SOCIAL_MOVE_PRACTICAL_HELP = 9;
+  SOCIAL_MOVE_MICRO_CARE = 10;
+  SOCIAL_MOVE_CALLBACK = 11;
+  SOCIAL_MOVE_TOPIC_SHIFT = 12;
+  SOCIAL_MOVE_DISAGREE = 13;
+  SOCIAL_MOVE_MICRO_REPAIR = 14;
+  SOCIAL_MOVE_SHARE_RANDOM = 15;
+}
+
+message SourceMeta {
+  string id = 1;
+  string source_type = 2;
+  string title = 3;
+  string url = 4;
+  string content_hash = 5;
+  string created_at = 6;
+}
+
+message ExtractPoint {
+  string id = 1;
+  string meta_id = 2;
+  string group = 3;
+  string vector = 4;
+  ExtractKind kind = 5;
+  string text = 6;
+  ConfidenceTier tier = 7;
+  float confidence_score = 8;
+  int64 timestamp_seconds = 9;
+  string deep_link = 10;
+}
+
+message IntentRequest {
+  string character_slug = 1;
+  string user_id = 2;
+  string user_message = 3;
+}
+
+message IntentResponse {
+  string run_id = 1;
+  string character_slug = 2;
+  int64 created_at_unix = 3;
+}
+
+message DeliverySlice {
+  string run_id = 1;
+  repeated ExtractPoint extract_points = 2;
+  SocialMove chosen_social_move = 3;
+  string state_summary = 4;
+}
+
+message TurnVerificationRequest {
+  string run_id = 1;
+  string proposed_answer = 2;
+  repeated string cited_ep_ids = 3;
+}
+
+message TurnVerificationResponse {
+  bool is_accepted = 1;
+  repeated string missing_ep_ids = 2;
+  string rejection_reason = 3;
+}
+
+message StateMutationProposal {
+  string mood = 1;
+  float energy_delta = 2;
+  string add_concern = 3;
+  string resolve_concern = 4;
+  string add_thread = 5;
+  float confidence = 6;
+}
+
+message StateReduceRequest {
+  string character_slug = 1;
+  string user_id = 2;
+  StateMutationProposal proposal = 3;
+}
+
+message DynamicStateSnapshot {
+  string mood = 1;
+  float energy = 2;
+  string conversation_appetite = 3;
+  string current_mode = 4;
+  repeated string active_concerns = 5;
+  repeated string active_threads = 6;
+}
+
+message PlanTurnRequest {
+  string character_slug = 1;
+  string user_id = 2;
+  string user_message = 3;
+}
+
+message PlanTurnResponse {
+  string run_id = 1;
+  string social_move = 2;
+  int32 bubble_count = 3;
+  DeliverySlice delivery = 4;
+  DynamicStateSnapshot current_state = 5;
+}
+
+message BiometricTelemetryRequest {
+  string character_slug = 1;
+  string user_id = 2;
+  repeated float rr_intervals_ms = 3;
+  float heart_rate = 4;
+}
+
+message BiometricTelemetryResponse {
+  float rmssd = 1;
+  float stress_index = 2;
+  float energy = 3;
+  string conversation_appetite = 4;
+  string mood = 5;
+}
+
+message ExecuteTurnRequest {
+  string character_slug = 1;
+  string user_id = 2;
+  string user_message = 3;
+}
+
+message ExecuteTurnResponse {
+  string run_id = 1;
+  bool is_verified = 2;
+  string rejection_reason = 3;
+  string answer = 4;
+  repeated string cited_ep_ids = 5;
+  string social_move = 6;
+  DynamicStateSnapshot current_state = 7;
+  int32 delivered_count = 8;
+}
+
+service CognitiveEngineService {
+  rpc OpenIntent(IntentRequest) returns (IntentResponse);
+  rpc CompileDelivery(IntentRequest) returns (DeliverySlice);
+  rpc VerifyTurn(TurnVerificationRequest) returns (TurnVerificationResponse);
+  rpc ReduceState(StateReduceRequest) returns (DynamicStateSnapshot);
+  rpc PlanTurn(PlanTurnRequest) returns (PlanTurnResponse);
+  rpc IngestBiometrics(BiometricTelemetryRequest) returns (BiometricTelemetryResponse);
+  rpc ExecuteTurn(ExecuteTurnRequest) returns (ExecuteTurnResponse);
+}

@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://omnitwin.org/schemas/biometric_sample.json",
+  "title": "BiometricSample",
+  "description": "Validated wearable telemetry sample as it crosses the biometric barrier into the modulation layer. Raw numbers never enter long-term LLM context or memory tables.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["type", "value", "unit", "sampled_at", "source"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "heart_rate",
+        "heart_rate_variability_sdnn",
+        "resting_heart_rate",
+        "respiratory_rate",
+        "active_energy_burned",
+        "step_count",
+        "sleep_analysis",
+        "oxygen_saturation",
+        "body_temperature"
+      ],
+      "description": "Wearable signal type identifier, normalized to snake_case."
+    },
+    "value": {
+      "type": "number",
+      "description": "Sample value in the unit declared below."
+    },
+    "unit": {
+      "type": "string",
+      "enum": [
+        "count/min",
+        "ms",
+        "count",
+        "kcal",
+        "hr",
+        "degC",
+        "percent"
+      ]
+    },
+    "sampled_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 UTC timestamp of the measurement."
+    },
+    "source": {
+      "type": "object",
+      "required": ["device"],
+      "properties": {
+        "device": {"type": "string"}
+      }
+    }
+  }
+}

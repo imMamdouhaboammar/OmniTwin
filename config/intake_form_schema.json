@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://omnitwin.org/schemas/intake_form.json",
+  "title": "IntakeFormPayload",
+  "description": "Validated intake form output for persona calibration.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["session_id", "completed_at", "answers", "derived_multipliers"],
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "answers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "question_id",
+          "dimension",
+          "score",
+          "raw_text",
+          "sincerity_class",
+          "sincerity_confidence"
+        ],
+        "properties": {
+          "question_id": {"type": "string"},
+          "dimension": {"type": "string"},
+          "score": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+          "raw_text": {"type": "string"},
+          "sincerity_class": {"type": "string", "enum": ["authentic", "ironic", "evasive"]},
+          "sincerity_confidence": {"type": "number", "minimum": 0.0, "maximum": 1.0}
+        }
+      }
+    },
+    "derived_multipliers": {
+      "type": "object",
+      "additionalProperties": {"type": "number"}
+    }
+  }
+}

@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+# Copyright 2026 Mamdouh Aboammar
+# SPDX-License-Identifier: Apache-2.0
+"""
+OmniTwin CLI executable launcher.
+"""
+import os
+import sys
+
+# Ensure src/ is on python path when running from repository root
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SRC_DIR = os.path.join(REPO_ROOT, "src")
+if SRC_DIR not in sys.path:
+    sys.path.insert(0, SRC_DIR)
+
+from omnitwin.cli import main
+
+if __name__ == "__main__":
+    sys.exit(main())

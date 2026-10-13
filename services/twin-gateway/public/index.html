@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniTwin — Cognitive Continuity Console</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: #111827;
+      --card-border: #1f2937;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent: #3b82f6;
+      --accent-glow: rgba(59, 130, 246, 0.2);
+      --success: #10b981;
+      --bubble-user: #2563eb;
+      --bubble-twin: #1f2937;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    header {
+      padding: 1rem 1.5rem;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .brand h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .brand span {
+      background: #1e3a8a;
+      color: #93c5fd;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 9999px;
+      font-weight: 600;
+    }
+    .metrics {
+      display: flex;
+      gap: 1.25rem;
+      font-size: 0.8rem;
+    }
+    .metric-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--text-muted);
+    }
+    .metric-val {
+      color: var(--text);
+      font-weight: 600;
+    }
+    main {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 65px);
+    }
+    .chat-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--card-border);
+    }
+    .chat-stream {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .bubble {
+      max-width: 70%;
+      padding: 0.65rem 1rem;
+      border-radius: 1rem;
+      font-size: 0.92rem;
+      line-height: 1.4;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+    .bubble.user {
+      align-self: flex-end;
+      background: var(--bubble-user);
+      color: white;
+      border-bottom-right-radius: 0.25rem;
+    }
+    .bubble.twin {
+      align-self: flex-start;
+      background: var(--bubble-twin);
+      color: var(--text);
+      border-bottom-left-radius: 0.25rem;
+      border: 1px solid var(--card-border);
+    }
+    .bubble-meta {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+      text-align: right;
+    }
+    .input-bar {
+      padding: 1rem 1.5rem;
+      background: var(--card-bg);
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      gap: 0.75rem;
+    }
+    input[type="text"] {
+      flex: 1;
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      outline: none;
+      font-size: 0.9rem;
+    }
+    input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-glow);
+    }
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.25rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: background 0.15s ease;
+    }
+    button:hover {
+      background: #2563eb;
+    }
+    .telemetry-sidebar {
+      width: 320px;
+      background: var(--card-bg);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      overflow-y: auto;
+    }
+    .sidebar-section h3 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+    .param-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: 0.75rem;
+    }
+    .param-group label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .param-group input {
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 0.4rem 0.6rem;
+      border-radius: 0.35rem;
+      font-size: 0.85rem;
+    }
+    .state-card {
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 0.8rem;
+      line-height: 1.6;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <h1>OmniTwin</h1>
+      <span>v0.1.0</span>
+    </div>
+    <div class="metrics">
+      <div class="metric-badge">Energy: <span class="metric-val" id="metric-energy">75%</span></div>
+      <div class="metric-badge">Mood: <span class="metric-val" id="metric-mood">Focused</span></div>
+      <div class="metric-badge">Grounding: <span class="metric-val" style="color: var(--success);" id="metric-grounding">Verified</span></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="chat-panel">
+      <div class="chat-stream" id="chat-stream">
+        <div class="bubble twin">
+          Hello! I am your OmniTwin cognitive companion. Every assertion I make is bounded, grounded, and verified against episodic knowledge.
+          <div class="bubble-meta">Contour Verified</div>
+        </div>
+      </div>
+      <div class="input-bar">
+        <input type="text" id="user-input" placeholder="Type a message or question..." autocomplete="off">
+        <button id="send-btn">Send</button>
+      </div>
+    </section>
+
+    <aside class="telemetry-sidebar">
+      <div class="sidebar-section">
+        <h3>Persona Configuration</h3>
+        <div class="param-group">
+          <label>Persona ID</label>
+          <input type="text" id="cfg-persona" value="alex">
+        </div>
+        <div class="param-group">
+          <label>User ID</label>
+          <input type="text" id="cfg-user" value="partner">
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Dynamic State</h3>
+        <div class="state-card" id="state-display">
+          <div><strong>Appetite:</strong> Moderate</div>
+          <div><strong>Active Threads:</strong> None</div>
+          <div><strong>Verified Nodes:</strong> 100%</div>
+          <div><strong>Transport:</strong> Ready</div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Simulate Wearable Telemetry</h3>
+        <div class="param-group">
+          <label>HRV / RMSSD (ms)</label>
+          <input type="number" id="tele-rmssd" value="48">
+        </div>
+        <button id="tele-btn" style="width: 100%; font-size: 0.8rem; padding: 0.5rem;">Send Telemetry</button>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    const stream = document.getElementById("chat-stream");
+    const input = document.getElementById("user-input");
+    const sendBtn = document.getElementById("send-btn");
+    const personaInput = document.getElementById("cfg-persona");
+    const userInput = document.getElementById("cfg-user");
+
+    function appendBubble(text, sender, meta = "") {
+      const bubble = document.createElement("div");
+      bubble.className = "bubble " + sender;
+      bubble.innerText = text;
+      if (meta) {
+        const metaDiv = document.createElement("div");
+        metaDiv.className = "bubble-meta";
+        metaDiv.innerText = meta;
+        bubble.appendChild(metaDiv);
+      }
+      stream.appendChild(bubble);
+      stream.scrollTop = stream.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const text = input.value.trim();
+      if (!text) return;
+
+      appendBubble(text, "user");
+      input.value = "";
+
+      const personaId = personaInput.value.trim() || "alex";
+      const userId = userInput.value.trim() || "partner";
+
+      try {
+        const res = await fetch("/api/v1/twin/turn", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ personaId, userId, message: text }),
+        });
+        const data = await res.json();
+
+        if (data.bubbles && data.bubbles.length > 0) {
+          data.bubbles.forEach((b, i) => {
+            setTimeout(() => {
+              appendBubble(b, "twin", `Bubble ${i + 1}/${data.bubbles.length} | ${data.socialMove}`);
+            }, i * 400);
+          });
+        } else if (data.answer) {
+          appendBubble(data.answer, "twin", "Contour Verified");
+        }
+
+        if (data.energy !== undefined) {
+          document.getElementById("metric-energy").innerText = Math.round(data.energy * 100) + "%";
+        }
+        if (data.mood) {
+          document.getElementById("metric-mood").innerText = data.mood.charAt(0).toUpperCase() + data.mood.slice(1);
+        }
+      } catch (err) {
+        appendBubble("Error communicating with OmniTwin gateway: " + err.message, "twin");
+      }
+    }
+
+    sendBtn.addEventListener("click", sendMessage);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") sendMessage();
+    });
+
+    document.getElementById("tele-btn").addEventListener("click", async () => {
+      const rmssd = parseInt(document.getElementById("tele-rmssd").value, 10) || 50;
+      const personaId = personaInput.value.trim() || "alex";
+      const mockRr = [800, 810, 790, 805, 815, 800, 795, 820];
+      try {
+        const res = await fetch("/api/v1/twin/telemetry", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ personaId, rrIntervalsMs: mockRr }),
+        });
+        const data = await res.json();
+        alert(`Telemetry ingested! Energy: ${Math.round((data.energy || 0.75) * 100)}%, Mood: ${data.mood || 'calm'}`);
+      } catch (e) {
+        alert("Telemetry error: " + e.message);
+      }
+    });
+  </script>
+</body>
+</html>

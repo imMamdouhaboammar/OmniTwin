@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use OmniTwin in your research, applications, or benchmarks, please cite it as below."
+authors:
+  - family-names: "Aboammar"
+    given-names: "Mamdouh"
+title: "OmniTwin: Cognitive Continuity and Grounded Memory Engine for AI Agents"
+version: 0.1.0
+date-released: 2026-10-13
+url: "https://github.com/imMamdouhaboammar/OmniTwin"
+repository-code: "https://github.com/imMamdouhaboammar/OmniTwin"
+license: "Apache-2.0"
+keywords:
+  - "ai-agents"
+  - "cognitive-architecture"
+  - "grounded-memory"
+  - "digital-twin"
+  - "temporal-continuity"
+  - "llm"
