@@ -134,3 +134,11 @@ Human conversation is paced by cognitive appetite and physical energy:
 - **Bubble Splitting**: Long model responses are split into conversational bursts (1–3 bubbles) based on punctuation and word limits.
 - **Typing Latency Emulation**: Dynamically computes realistic typing delays with jitter based on character count.
 - **Wearable Telemetry Processing**: Ingests R-R interval streams to estimate RMSSD (Root Mean Square of Successive Differences) and Baevsky Stress Index for conversational pacing.
+
+---
+
+## 5. Application-Engine Separation & Ecosystem
+
+OmniTwin is intentionally designed as a reusable **cognitive infrastructure layer** rather than a monolithic end-user chat application. In a complete companion stack, user-facing applications such as [Rafiq](https://github.com/imMamdouhaboammar/Rafiq-Bot) own UI rendering, session persistence, user settings, and model inference orchestration, while delegating bounded cognitive context compilation, episodic grounding, and relational state reduction to an engine layer like OmniTwin.
+
+See [Rafiq: Companion Application Integration](integrations/rafiq.md) and [`examples/integrations/rafiq/design_contract.py`](../examples/integrations/rafiq/design_contract.py) for the architectural interface boundary and design contract.

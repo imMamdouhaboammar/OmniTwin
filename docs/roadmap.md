@@ -33,3 +33,23 @@ This document outlines the version roadmap and planned development trajectory fo
 - [ ] **CRDT Edge-to-Cloud Sync**: Conflict-free Replicated Data Types for multi-device state synchronization between mobile, desktop, and cloud nodes.
 - [ ] **End-to-End Encrypted Knowledge Replication**: Zero-knowledge encryption for remote backup of persona cognitive stores.
 - [ ] **On-Device Small Model Adapters**: Direct bindings for llama.cpp and Apple MLX for 100% offline edge inference on consumer hardware.
+
+---
+
+## Ecosystem & Integration Opportunities
+
+### Rafiq Integration (Community Opportunity)
+
+[Rafiq](https://github.com/imMamdouhaboammar/Rafiq-Bot) is a TypeScript/React companion
+application whose inference, persona, and continuity architecture is architecturally aligned with
+OmniTwin's cognitive layer. A real integration is a community opportunity:
+
+- **v0.2.0 window** — Expose a lightweight REST endpoint in OmniTwin alongside the existing gRPC
+  transport to make JavaScript integration straightforward.
+- **Community contribution** — Build and validate the first `examples/integrations/rafiq/`
+  working integration using synthetic personas.
+- **Protocol alignment** — Agree on a JSON schema for the cognitive context payload that both
+  projects can validate independently.
+
+See [docs/integrations/rafiq.md](integrations/rafiq.md) for the full design specification and
+current integration status.
